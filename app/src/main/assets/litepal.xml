@@ -1,0 +1,9 @@
+<litepal>
+    <dbname value="qtyweather" />
+    <version value="1" />
+    <list>
+        <mapping class="com.qtyweather.android.db.Country" />
+        <mapping class="com.qtyweather.android.db.City" />
+        <mapping class="com.qtyweather.android.db.Province" />
+    </list>
+</litepal>

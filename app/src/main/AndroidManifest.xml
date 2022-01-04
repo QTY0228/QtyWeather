@@ -8,6 +8,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name="org.litepal.LitePalApplication"
         android:theme="@style/Theme.QtyWeather">
         <activity android:name=".MainActivity">
             <intent-filter>
