@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,14 +32,25 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.content.ContentValues.TAG;
+
 public class ChooseAreaFragment extends Fragment {
 
+    // 分别代表省、市、县
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY = 1;
     public static final int LEVEL_COUNTRY = 2;
+
+    // 显示正在加载
     private ProgressDialog progressDialog;
+
+    // 文本，用来显示当前所处的位置，比如中国、西安、长安等
     private TextView title_text;
+
+    // 回退按钮，回到上一级别的选择中
     private Button back_button;
+
+    // 生成列表
     private ListView list_view;
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<>();
@@ -56,9 +68,9 @@ public class ChooseAreaFragment extends Fragment {
     private City selectedCity;
 
     // 当前选中的级别
-    private int currentLevel;
+    private int currentLevel = 0;
 
-
+    // 初始化ArrayAdapter，并将其设置为ListView的适配器
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_choose_area_fragment, container, false);
@@ -70,7 +82,7 @@ public class ChooseAreaFragment extends Fragment {
         return view;
     }
 
-
+    // 给ListView和Button设置点击事件，最后调用queryProvinces()方法，开始加载省级数据
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -99,11 +111,12 @@ public class ChooseAreaFragment extends Fragment {
         queryProvinces();
     }
 
-
+    // 查询全国所有的省，优先从数据库查，如果没有查询到再去服务器查询
     private void queryProvinces() {
         title_text.setText("中国");
         back_button.setVisibility(View.GONE);
         provinceList = DataSupport.findAll(Province.class);
+        Log.d(TAG, "queryProvinces start");
         if (provinceList.size() > 0) {
             dataList.clear();
             for (Province province : provinceList) {
@@ -118,7 +131,7 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 
-
+    // 查询全国所有的市，优先从数据库查，如果没有查询到再去服务器查询
     private void queryCities() {
         title_text.setText(selectedProvince.getProvinceName());
         back_button.setVisibility(View.VISIBLE);
@@ -139,7 +152,7 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 
-
+    // 查询全国所有的县，优先从数据库查，如果没有查询到再去服务器查询
     private void queryCountries() {
         title_text.setText(selectedCity.getCityName());
         back_button.setVisibility(View.VISIBLE);
@@ -184,7 +197,7 @@ public class ChooseAreaFragment extends Fragment {
                                 queryProvinces();
                             } else if ("city".equals(type)) {
                                 queryCities();
-                            } else if ("city".equals(type)) {
+                            } else if ("country".equals(type)) {
                                 queryCountries();
                             }
                         }
@@ -198,14 +211,13 @@ public class ChooseAreaFragment extends Fragment {
                     @Override
                     public void run() {
                         closeProgressDialog();
+                        Log.d(TAG, "网络连接失败");
                         Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
-
         });
     }
-
 
     private void showProgressDialog() {
         if (progressDialog == null) {
