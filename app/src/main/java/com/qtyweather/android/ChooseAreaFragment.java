@@ -42,12 +42,22 @@ public class ChooseAreaFragment extends Fragment {
     private ListView list_view;
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<>();
+
+    // 省列表
     private List<Province> provinceList;
+    // 市列表
     private List<City> cityList;
+    // 县列表
     private List<Country> countryList;
+
+    // 选中的省份
     private Province selectedProvince;
+    // 选中的城市
     private City selectedCity;
+
+    // 当前选中的级别
     private int currentLevel;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,6 +69,7 @@ public class ChooseAreaFragment extends Fragment {
         list_view.setAdapter(adapter);
         return view;
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -88,6 +99,7 @@ public class ChooseAreaFragment extends Fragment {
         queryProvinces();
     }
 
+
     private void queryProvinces() {
         title_text.setText("中国");
         back_button.setVisibility(View.GONE);
@@ -100,8 +112,12 @@ public class ChooseAreaFragment extends Fragment {
             adapter.notifyDataSetChanged();
             list_view.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
+        } else {
+            String address = "http://guolin.tech/api/china";
+            queryFromServer(address, "province");
         }
     }
+
 
     private void queryCities() {
         title_text.setText(selectedProvince.getProvinceName());
@@ -123,6 +139,7 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 
+
     private void queryCountries() {
         title_text.setText(selectedCity.getCityName());
         back_button.setVisibility(View.VISIBLE);
@@ -142,6 +159,7 @@ public class ChooseAreaFragment extends Fragment {
             queryFromServer(address, "country");
         }
     }
+
 
     private void queryFromServer(String address, final String type) {
         showProgressDialog();
@@ -188,6 +206,7 @@ public class ChooseAreaFragment extends Fragment {
         });
     }
 
+
     private void showProgressDialog() {
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(getActivity());
@@ -196,6 +215,7 @@ public class ChooseAreaFragment extends Fragment {
         }
         progressDialog.show();
     }
+
 
     private void closeProgressDialog() {
         if (progressDialog != null) {
